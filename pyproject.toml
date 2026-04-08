@@ -15,8 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-# This tells the grader how to start your server
-server = "server.app:app"
+server = "server.app:main"
 
 [tool.setuptools]
 packages = ["server"]
