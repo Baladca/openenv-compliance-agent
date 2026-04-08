@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openenv-compliance-agent"
+version = "0.1.0"
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+    "openenv-core>=0.2.0",
+    "openai>=1.0.0",
+    "pydantic>=2.0.0",
+    "python-multipart"
+]
+
+[project.scripts]
+# This tells the grader how to start your server
+server = "server.app:app"
+
+[tool.setuptools]
+packages = ["server"]
