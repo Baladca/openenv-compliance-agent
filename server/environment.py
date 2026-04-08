@@ -11,7 +11,7 @@ class ContentModEnv:
 
     def reset(self):
         self.current_idx = 0
-        self.cumulative_reward = 0.05
+        self.cumulative_reward = 0.05 # Strictly > 0
         self.done = False
         return self._get_obs("Session Started")
 
@@ -26,7 +26,7 @@ class ContentModEnv:
         if hasattr(action_dict, 'dict'):
             action_dict = action_dict.dict()
             
-        reward = 0.01 
+        reward = 0.01 # Strictly > 0
         idx = min(self.current_idx, len(self.tasks)-1)
         task = self.tasks[idx]
         
@@ -36,14 +36,14 @@ class ContentModEnv:
         if action_type == task["target"]:
             if task["target"] == "redact":
                 if target_text == task["val"]:
-                    reward = 0.99 
+                    reward = 0.99 # Strictly < 1
                     msg = f"Task {task['id']} Success: PII isolated."
                     self.current_idx += 1
                 else:
                     reward = 0.3 
                     msg = f"Task {task['id']} Partial: Substring mismatch."
             else:
-                reward = 0.99  
+                reward = 0.99 # Strictly < 1
                 msg = f"Task {task['id']} Success."
                 self.current_idx += 1
         else:
@@ -60,6 +60,7 @@ class ContentModEnv:
         idx = min(self.current_idx, len(self.tasks)-1)
         task = self.tasks[idx]
         
+        # Calculate progress strictly between 0.01 and 0.99
         raw_progress = self.current_idx / len(self.tasks)
         clamped_score = max(0.01, min(0.99, raw_progress))
         
