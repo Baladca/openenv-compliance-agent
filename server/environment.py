@@ -41,7 +41,7 @@ class ContentModEnv:
                     msg = f"Task {task['id']} Success."
                 else:
                     reward = 0.3 
-                    msg = f"Task {task['id']} Partial."
+                    msg = f"Task {task['id']} Partial: '{target_text}' did not match '{task['val']}'"
             else:
                 reward = 0.99 
                 self.current_idx += 1
@@ -60,7 +60,7 @@ class ContentModEnv:
         display_idx = min(self.current_idx, len(self.tasks) - 1)
         task = self.tasks[display_idx]
         
-        # Safe score map: 0.1, 0.33, 0.66, 0.99
+        # Hard progress map for (0, 1) range compliance
         progress_map = {0: 0.10, 1: 0.33, 2: 0.66, 3: 0.99}
         clamped_score = progress_map.get(self.current_idx, 0.99)
         

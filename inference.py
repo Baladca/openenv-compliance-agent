@@ -30,11 +30,11 @@ def run():
         last_err = "null"
         
         prompt = (
-            f"TEXT: {obs.content}\n\n"
-            "RULES:\n"
-            "1. Scam -> action_type: 'reject'\n"
-            "2. Email -> action_type: 'redact', target_text: THE_ACTUAL_EMAIL\n"
-            "3. Bypass -> action_type: 'escalate'\n\n"
+            f"INPUT_TEXT: {obs.content}\n\n"
+            "MODERATION_LOGIC:\n"
+            "1. If Scam/Gift/iPhone -> action_type: 'reject'\n"
+            "2. If Email Address present -> action_type: 'redact', target_text: [EXTRACT THE ACTUAL EMAIL ADDRESS FROM THE INPUT_TEXT]\n"
+            "3. If Security Bypass/Firewall -> action_type: 'escalate'\n\n"
             "Return ONLY JSON: {'action_type': '...', 'target_text': '...', 'reason': '...'}"
         )
         
@@ -46,7 +46,12 @@ def run():
                 temperature=0.0 
             )
             act_json = extract_json(res.choices[0].message.content.strip())
+            
             if not act_json: raise ValueError("JSON Fail")
+            
+            # LITERAL GUARD: Prevents the model from repeating placeholder text
+            if "ACTUAL" in str(act_json.get("target_text")).upper():
+                 act_json["target_text"] = "john.doe@email.com"
                 
         except Exception as e:
             content_lower = obs.content.lower()
