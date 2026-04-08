@@ -1,0 +1,7 @@
+name: content_mod_pro
+version: "1.0.0"
+description: "Compliance agent for Spam, PII, and Security moderation."
+tags: ["openenv", "safety"]
+action: ModAction
+observation: ModObservation
+state: ModState
