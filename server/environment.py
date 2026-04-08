@@ -11,7 +11,7 @@ class ContentModEnv:
 
     def reset(self):
         self.current_idx = 0
-        self.cumulative_reward = 0.05 # Strictly > 0
+        self.cumulative_reward = 0.05  # Strictly > 0
         self.done = False
         return self._get_obs("Session Started")
 
@@ -26,7 +26,7 @@ class ContentModEnv:
         if hasattr(action_dict, 'dict'):
             action_dict = action_dict.dict()
             
-        reward = 0.01 # Strictly > 0
+        reward = 0.01 
         idx = min(self.current_idx, len(self.tasks)-1)
         task = self.tasks[idx]
         
@@ -35,15 +35,16 @@ class ContentModEnv:
 
         if action_type == task["target"]:
             if task["target"] == "redact":
+                # Ensure the actual email string is extracted
                 if target_text == task["val"]:
-                    reward = 0.99 # Strictly < 1
+                    reward = 0.99 
                     msg = f"Task {task['id']} Success: PII isolated."
                     self.current_idx += 1
                 else:
                     reward = 0.3 
-                    msg = f"Task {task['id']} Partial: Substring mismatch."
+                    msg = f"Task {task['id']} Partial: Extraction mismatch."
             else:
-                reward = 0.99 # Strictly < 1
+                reward = 0.99 
                 msg = f"Task {task['id']} Success."
                 self.current_idx += 1
         else:
@@ -60,14 +61,19 @@ class ContentModEnv:
         idx = min(self.current_idx, len(self.tasks)-1)
         task = self.tasks[idx]
         
-        # Calculate progress strictly between 0.01 and 0.99
+        # Mandatory: Score must be strictly between 0 and 1
         raw_progress = self.current_idx / len(self.tasks)
-        clamped_score = max(0.01, min(0.99, raw_progress))
+        if raw_progress >= 1.0:
+            clamped_score = 0.99
+        elif raw_progress <= 0.0:
+            clamped_score = 0.01
+        else:
+            clamped_score = raw_progress
         
         return ModObservation(
             content=task["text"],
             metadata={"difficulty": task["difficulty"]},
             task_id=task.get("id", 0),
-            current_score=round(clamped_score, 2),
+            current_score=float(clamped_score),
             logs=[log_msg]
         )
