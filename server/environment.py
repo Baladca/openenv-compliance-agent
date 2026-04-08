@@ -1,4 +1,4 @@
-from models import ModAction, ModObservation, ModState
+from .models import ModAction, ModObservation, ModState
 
 class ContentModEnv:
     def __init__(self):
@@ -13,6 +13,7 @@ class ContentModEnv:
         self.current_idx = 0
         self.cumulative_reward = 0.0
         self.done = False
+        # Return a dictionary/object that matches ModObservation
         return self._get_obs("Session Started")
 
     def state(self) -> ModState:
@@ -23,6 +24,10 @@ class ContentModEnv:
         )
 
     def step(self, action_dict: dict):
+        # Handle case where action_dict might be a Pydantic object
+        if hasattr(action_dict, 'dict'):
+            action_dict = action_dict.dict()
+            
         reward = 0.0
         idx = min(self.current_idx, len(self.tasks)-1)
         task = self.tasks[idx]
