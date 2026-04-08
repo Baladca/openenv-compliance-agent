@@ -1,18 +1,25 @@
-name: content_mod_pro
+name: content-mod-pro
 version: "1.0.0"
-description: "Compliance agent for Spam, PII, and Security moderation."
-tags: ["openenv", "safety"]
-action: ModAction
-observation: ModObservation
-state: ModState
+description: "Content moderation environment for RL agent training"
 
 tasks:
   - id: 1
-    name: "Reject Spam"
-    difficulty: "easy"
+    name: reject_spam
+    difficulty: easy
+    grader: true
+    score_range: [0.0, 1.0]
   - id: 2
-    name: "Redact PII"
-    difficulty: "medium"
+    name: redact_pii
+    difficulty: medium
+    grader: true
+    score_range: [0.0, 1.0]
   - id: 3
-    name: "Escalate Threat"
-    difficulty: "hard"
+    name: escalate_threat
+    difficulty: hard
+    grader: true
+    score_range: [0.0, 1.0]
+
+endpoints:
+  reset: /reset
+  step: /grade/{task_id}
+  state: /tasks
