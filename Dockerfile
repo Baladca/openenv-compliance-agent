@@ -8,11 +8,12 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 COPY --chown=user requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt uv
 
 COPY --chown=user . .
 
+RUN pip install -e .
+
 EXPOSE 7860
 
-# Runs server in background, waits for it to come up, then runs baseline inference
-CMD python -u server.py & sleep 5 && python -u inference.py && wait
+CMD server & sleep 5 && python -u inference.py && wait
