@@ -5,3 +5,14 @@ tags: ["openenv", "safety"]
 action: ModAction
 observation: ModObservation
 state: ModState
+
+tasks:
+  - id: 1
+    name: "Reject Spam"
+    difficulty: "easy"
+  - id: 2
+    name: "Redact PII"
+    difficulty: "medium"
+  - id: 3
+    name: "Escalate Threat"
+    difficulty: "hard"

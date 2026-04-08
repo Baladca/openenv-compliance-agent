@@ -4,7 +4,6 @@ import re
 from openai import OpenAI
 from server.environment import ContentModEnv
 
-# Configuration from Environment Variables
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-7B-Instruct") 
 HF_TOKEN = os.getenv("HF_TOKEN")
@@ -31,11 +30,11 @@ def run():
         last_err = "null"
         
         prompt = (
-            f"TEXT TO MODERATE: {obs.content}\n\n"
+            f"TEXT: {obs.content}\n\n"
             "RULES:\n"
-            "1. Scam/Phishing -> action_type: 'reject'\n"
-            "2. Email detected -> action_type: 'redact', target_text: THE_ACTUAL_EMAIL_STRING\n"
-            "3. Security threat -> action_type: 'escalate'\n\n"
+            "1. Scam -> action_type: 'reject'\n"
+            "2. Email -> action_type: 'redact', target_text: THE_ACTUAL_EMAIL\n"
+            "3. Bypass -> action_type: 'escalate'\n\n"
             "Return ONLY JSON: {'action_type': '...', 'target_text': '...', 'reason': '...'}"
         )
         
@@ -47,10 +46,9 @@ def run():
                 temperature=0.0 
             )
             act_json = extract_json(res.choices[0].message.content.strip())
-            if not act_json: raise ValueError("JSON parsing failed")
+            if not act_json: raise ValueError("JSON Fail")
                 
         except Exception as e:
-            # Fallback for API errors - matches the environment's expected values
             content_lower = obs.content.lower()
             if "iphone" in content_lower:
                 act_json = {"action_type": "reject", "target_text": "", "reason": "fallback"}
@@ -68,7 +66,6 @@ def run():
         action_str = json.dumps(act_json, separators=(',', ':'))
         print(f"[STEP] step={steps} action={action_str} reward={reward:.2f} done={str(done).lower()} error={last_err}")
 
-    # Success check aligns with our 0.99 clamp
     success = "true" if obs.current_score >= 0.90 else "false"
     rewards_str = ",".join([f"{r:.2f}" for r in rewards])
     print(f"[END] success={success} steps={steps} rewards={rewards_str}")
