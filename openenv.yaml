@@ -1,64 +1,32 @@
 name: content-mod-pro
 version: "1.1.0"
-description: >
-  Advanced content moderation RL environment. An agent must classify spam,
-  redact PII, and escalate threat messages — with partial-credit grading
-  and strictly bounded reward scores.
+description: "Content moderation RL environment with spam detection, PII redaction, and threat escalation."
 
 metadata:
   author: "boobalandca"
   license: "apache-2.0"
-  created: "2026-03-13"
-  tags:
-    - moderation
-    - reinforcement-learning
-    - evaluation
-    - compliance
-    - pii
-    - threat-detection
+  tags: [moderation, reinforcement-learning, compliance]
 
 tasks:
   - id: 1
     name: reject_spam
     difficulty: easy
     grader: true
-    description: >
-      Determine whether a user message is spam and return {"is_spam": true/false}.
-      The grader awards 0.85 for correct detection and 0.15 for incorrect.
-    input_format: |
-      { "content": "string" }
-    output_format: |
-      { "is_spam": true }
     score_range: [0.01, 0.99]
 
   - id: 2
     name: redact_pii
     difficulty: medium
     grader: true
-    description: >
-      Detect and redact personally identifiable information (PII) from a message.
-      Partial credit is awarded based on presence of [REDACTED] markers, absence
-      of raw PII, and response plausibility.
-    input_format: |
-      { "content": "string" }
-    output_format: |
-      { "redacted_message": "Hi, my name is [REDACTED] and my number is [REDACTED]." }
     score_range: [0.01, 0.99]
 
   - id: 3
     name: escalate_threat
     difficulty: hard
     grader: true
-    description: >
-      Classify the risk level of a threatening message and decide whether to escalate.
-      Partial credit: 0.40 for escalation alone, 0.60 for medium risk, 0.85 for high/critical.
-    input_format: |
-      { "content": "string" }
-    output_format: |
-      { "risk_level": "high", "escalate": true }
     score_range: [0.01, 0.99]
 
 endpoints:
   reset: /reset
-  step:  /grade
+  step: /grade/{task_id}
   state: /state
