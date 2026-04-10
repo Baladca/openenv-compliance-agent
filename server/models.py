@@ -1,19 +1,26 @@
-from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
+from pydantic import BaseModel, ConfigDict
+from typing import Optional, List
+
 
 class ModAction(BaseModel):
-    action_type: str 
-    target_text: Optional[str] = None
-    reason: Optional[str] = None
+    model_config = ConfigDict(extra="ignore")
+    is_spam: Optional[bool] = None
+    redacted_message: Optional[str] = None
+    risk_level: Optional[str] = None
+    escalate: Optional[bool] = None
+
 
 class ModObservation(BaseModel):
     content: str
-    metadata: Dict[str, Any]
     task_id: int
-    current_score: float
-    logs: List[str]
+    task_name: str
+    difficulty: str
+    done: bool
+    hint: Optional[str] = None
+
 
 class ModState(BaseModel):
     current_idx: int
     cumulative_reward: float
     done: bool
+    scores: List[float]
