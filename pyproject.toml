@@ -4,18 +4,21 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openenv-compliance-agent"
-version = "0.1.0"
+version = "1.1.0"
+description = "Content moderation RL environment for OpenEnv hackathon"
+requires-python = ">=3.10"
 dependencies = [
-    "fastapi>=0.104.0",
-    "uvicorn>=0.24.0",
-    "openenv-core>=0.2.0",
+    "fastapi>=0.111.0",
+    "uvicorn[standard]>=0.29.0",
+    "openenv-core",
     "openai>=1.0.0",
     "pydantic>=2.0.0",
-    "python-multipart"
+    "python-multipart",
 ]
 
 [project.scripts]
 server = "server.app:main"
 
-[tool.setuptools]
-packages = ["server"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["server*"]
